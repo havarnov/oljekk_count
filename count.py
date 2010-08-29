@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import time, shelve
+from __future__ import division
+import time, shelve, math
 
 class count:
 
@@ -18,13 +19,45 @@ class count:
         else:
             self.act_file[list] = [time.time()]
 
-    def print_list(self):
-        for i in self.act_file[self.act_list]:
+        return int(self.act_file[list][-1])
+
+    def stats(self, key, value, last_count):
+        if self.act_file.has_key(key):
+            self.act_key = self.act_file[key]
+            self.act_value = self.act_file[value]
+            #last_key = int(self.act_key[-1])
+            last_key = time.mktime
+            if last_count < last_key + 5*60:
+                self.act_value[-1] += 1
+            else:
+                self.act_key.append(last_key + 5)
+                self.act_value.append(1)
+        else:
+            m = time.localtime().tm_min
+            t = time.localtime().tm_hour
+            m = self.roundint(m,5)
+            self.act_file[key] = ['{0}{1}'.format(t,m)]
+            self.act_file[value] = [1]
+
+    def roundint(self,n,p):
+        x = (n+p)/p
+        x = math.floor(x)
+        x = (x * p) - p
+        return int(x)
+
+    def print_list(self,list):
+        for i in self.act_file[list]:
             print(i)
 
 
 c = count()
 
-c.count('test_list','test.dat') 
+last = c.count('test_list','test.dat') 
 
-c.print_list()
+c.stats('test_key','test_value',last)
+
+c.print_list('test_list')
+c.print_list('test_value')
+
+
+
