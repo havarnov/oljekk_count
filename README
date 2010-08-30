@@ -1,1 +1,3 @@
 This prorgram will each tiome it's runned count and store what time the program was executed. It will also make statistics on how many times it was executed the last 5 min, 60 min, etc. And make graphs that will illustrate the statistics.
+
+TEST
