@@ -26,21 +26,24 @@ class count:
             self.act_key = self.act_file[key]
             self.act_value = self.act_file[value]
             self.act_key2 = self.act_file[key2]
+            #print(self.act_key[-1])
             last_key = int(self.act_key[-1])
+            #last_key = self.act_key[-1]
             print(last_key)
             last_key2 = self.act_key2[-1]
             print(last_count,' skal vare mindre < enn ',int(last_key2) + 5*60)
             if last_count < int(last_key2) + 5*60:
-                self.act_value[-1] =+ 1
+                self.act_value[-1] += 1
                 self.act_file[value] = self.act_value
                 print('if')
             else:
                 last_key = last_key + 5
-                self.act_key.append('last_key')
+                #self.act_key.append('{0}'.format(last_key))
                 tm = time.localtime()
                 m = tm.tm_min
                 t = tm.tm_hour
                 m = self.roundint(m,5)
+                self.act_key.append('{0}{1}'.format(t,m))
                 self.act_key2.append(time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1)))
                 self.act_value.append(1)
                 self.act_file[key] = self.act_key
