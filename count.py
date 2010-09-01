@@ -46,6 +46,26 @@ class count:
             self.act_file[value] = [1]
             self.act_file[key] = [time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1))]
 
+    def create_hour(self,hour):
+        tm = time.localtime()
+        m = 0
+        t = tm.tm_hour
+        self.act_file[hour] = [time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1))]
+        temp = self.act_file[hour]
+        for i in range(11):
+            m += 5
+            temp.append(time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1)))
+        self.act_file[hour] = temp
+
+    def check_hour(self,hour):
+        tm = time.localtime()
+        m = 0
+        t = time.localtime(self.act_key[0]).tm_hour
+        for i in range(11):
+            
+            if 
+
+
     def roundint(self,n,p):
         x = (n+p)/p
         x = math.floor(x)
@@ -56,7 +76,8 @@ class count:
         for i in self.act_file[list]:
             print(i)
 
-    def graph(self):
+    #def graph(self):
+
 
 
 
@@ -65,6 +86,8 @@ c = count()
 last = c.count('test_list','test.dat') 
 
 c.stats('test_key','test_value',last)
+
+c.create_hour('0')
 
 #c.print_list('test_list')
 #c.print_list('test_value')
