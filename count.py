@@ -2,24 +2,26 @@
 
 from __future__ import division
 import time, shelve, math, create_UTC
+utc = create_UTC.create_utc()
 
 class count:
 
-    def open_file(self, file):
-        shelve.open(file)
+    def open_file(self, file_in):
+        self.file = shelve.open(file_in)
+        self.year = file_in
 
-    def count(self, list, file):
-        self.act_list = list
-        #self.act_file = self.open_file(file)
-        self.act_file = shelve.open(file)
-        if self.act_file.has_key(list):
-            temp_list = self.act_file[list]
+    def count(self, list,year):
+        #self.act_list = list
+        self.open_file(year)
+        #self.act_file = shelve.open(file)
+        if self.file.has_key(list):
+            temp_list = self.file[list]
             temp_list.append(time.time())
-            self.act_file[list] = temp_list
+            self.file[list] = temp_list
         else:
-            self.act_file[list] = [time.time()]
+            self.file[list] = [time.time()]
 
-        return int(self.act_file[list][-1])
+        return self.file[list][-1]
 
     def stats(self, key, value, last_count):
         if self.act_file.has_key(key):
@@ -46,32 +48,49 @@ class count:
             self.act_file[value] = [1]
             self.act_file[key] = [time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1))]
 
-    def create_week(self,week):
-        tm = time.localtime()
-        m = 0
-        t = 0
-        
+    def stats2(self,week,wday,hour,last_count):
+        if self.file.has_key('week'):
+            self.stats3(last_count)
+        else:
+            week = []
+            for i in range(52):
+                week.append(i + 1)
+            self.file['week'] = week
+            wday = []
+            for i in range(7):
+                wday.append(i)
+            hour = []
+            for i in range(24):
+                hour.append(i)
+            for i in week:
+                for j in wday:
+                    for k in hour:
+                        self.file['{0}-{1}-{2}'.format(i,j,k)] = utc.fmin(int(self.year),i,j,k)
+                        self.file['{0}-{1}-{2}-value'.format(i,j,k)] = [0,0,0,0,0,0,0,0,0,0,0,0]
+            self.stats3(last_count)
+
+    def stats3(self,last_count):
+        w = time.strftime('%W')
+        d = time.strftime('%w')
+        d = self.week_day(d)
+        h = time.strftime('%H')
+        last_utc = self.file['{0}-{1}-{2}'.format(w,d,h)]
+        value = self.file['{0}-{1}-{2}-value'.format(w,d,h)]
+        for i in range(12):
+            if last_count >= last_utc[i] and last_count < last_utc[i]+300: 
+                value[i] += 1
+
+        self.file['{0}-{1}-{2}-value'.format(w,d,h)] = value 
 
 
 
-    def create_hour(self,hour):
-        tm = time.localtime()
-        m = 0
-        t = tm.tm_hour
-        self.act_file[hour] = [time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1))]
-        temp = self.act_file[hour]
-        for i in range(11):
-            m += 5
-            temp.append(time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1)))
-        self.act_file[hour] = temp
-
-    def check_hour(self,hour):
-        tm = time.localtime()
-        m = 0
-        t = time.localtime(self.act_key[0]).tm_hour
-        #for i in range(11):
-            
-
+    def week_day(self,day):
+        day = int(day)
+        if day in range(1,6):
+            day -= 1
+        else:
+            day = 6
+        return day
 
     def roundint(self,n,p):
         x = (n+p)/p
@@ -80,24 +99,29 @@ class count:
         return int(x)
 
     def print_list(self,list):
-        for i in self.act_file[list]:
-            print(i)
+        for i in self.file[list]:
+            return i
 
     #def graph(self):
 
 
 
 
-#c = count()
+c = count()
 
-#last = c.count('test_list','test.dat') 
-
+last = c.count('test_list','2010') 
+c.stats2(35,4,12,last)
 #c.stats('test_key','test_value',last)
 
 #c.create_hour('0')
 
 #c.print_list('test_list')
-#c.print_list('test_value')
+c.print_list('35-4-12-value')
+for i in range(1,12):
+    for j in range(1,7):
+        for k in range(1,52):
+            if c.print_list('{0}-{1}-{2}-value'.format(k,j,i)) > 0:
+                print('jippi')
 
 
 
