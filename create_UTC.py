@@ -77,6 +77,3 @@ class create_utc:
 
         return fmin
 
-c = create_utc()
-now = c.fmin(2010,35,3,18)
-print(now)

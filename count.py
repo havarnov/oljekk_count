@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import division
-import time, shelve, math
+import time, shelve, math, create_UTC
 
 class count:
 
@@ -46,6 +46,14 @@ class count:
             self.act_file[value] = [1]
             self.act_file[key] = [time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1))]
 
+    def create_week(self,week):
+        tm = time.localtime()
+        m = 0
+        t = 0
+        
+
+
+
     def create_hour(self,hour):
         tm = time.localtime()
         m = 0
@@ -61,9 +69,8 @@ class count:
         tm = time.localtime()
         m = 0
         t = time.localtime(self.act_key[0]).tm_hour
-        for i in range(11):
+        #for i in range(11):
             
-            if 
 
 
     def roundint(self,n,p):
@@ -81,13 +88,13 @@ class count:
 
 
 
-c = count()
+#c = count()
 
-last = c.count('test_list','test.dat') 
+#last = c.count('test_list','test.dat') 
 
-c.stats('test_key','test_value',last)
+#c.stats('test_key','test_value',last)
 
-c.create_hour('0')
+#c.create_hour('0')
 
 #c.print_list('test_list')
 #c.print_list('test_value')
