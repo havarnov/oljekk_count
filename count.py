@@ -51,6 +51,7 @@ class count:
     def stats2(self,week,wday,hour,last_count):
         if self.file.has_key('week'):
             self.stats3(last_count)
+            print('if')
         else:
             week = []
             for i in range(52):
@@ -74,9 +75,12 @@ class count:
         d = time.strftime('%w')
         d = self.week_day(d)
         h = time.strftime('%H')
+        h = int(h)+1
+        print(w,d,h)
         last_utc = self.file['{0}-{1}-{2}'.format(w,d,h)]
         value = self.file['{0}-{1}-{2}-value'.format(w,d,h)]
         for i in range(12):
+            print(last_count,'storre enn',last_utc[i],' mindre enn',last_utc[i]+300)
             if last_count >= last_utc[i] and last_count < last_utc[i]+300: 
                 value[i] += 1
 
@@ -90,7 +94,7 @@ class count:
             day -= 1
         else:
             day = 6
-        return day
+        return day + 1
 
     def roundint(self,n,p):
         x = (n+p)/p
@@ -110,7 +114,7 @@ class count:
 c = count()
 
 last = c.count('test_list','2010') 
-c.stats2(35,4,12,last)
+c.stats2(36,2,23,last)
 #c.stats('test_key','test_value',last)
 
 #c.create_hour('0')
