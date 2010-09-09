@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import division
-import time, shelve, math, create_UTC
+import time, shelve, math, create_UTC, pylab
 utc = create_UTC.create_utc()
 
 class count:
@@ -51,7 +51,7 @@ class count:
     def stats2(self,week,wday,hour,last_count):
         if self.file.has_key('week'):
             self.stats3(last_count)
-            print('if')
+            #print('if')
         else:
             week = []
             for i in range(52):
@@ -75,12 +75,11 @@ class count:
         d = time.strftime('%w')
         d = self.week_day(d)
         h = time.strftime('%H')
-        h = int(h)+1
-        print(w,d,h)
+        #print(w,d,h)
         last_utc = self.file['{0}-{1}-{2}'.format(w,d,h)]
         value = self.file['{0}-{1}-{2}-value'.format(w,d,h)]
         for i in range(12):
-            print(last_count,'storre enn',last_utc[i],' mindre enn',last_utc[i]+300)
+            #print(last_count,'storre enn',last_utc[i],' mindre enn',last_utc[i]+300)
             if last_count >= last_utc[i] and last_count < last_utc[i]+300: 
                 value[i] += 1
 
@@ -106,26 +105,32 @@ class count:
         for i in self.file[list]:
             return i
 
-    #def graph(self):
-
+    def graph(self):
+        fig = pylab.figure()
+        ax = fig.add_subplot(1,1,1)
+        w = time.strftime('%W')
+        d = time.strftime('%w')
+        d = self.week_day(d)
+        h = time.strftime('%H')
+        y = self.file['{0}-{1}-{2}-value'.format(w,d,h)]
+        x = range(len(y))
+        ax.bar(x,y,width=0.1,facecolor='#777777',align='center')
+        ax.set_ylabel('Counts')
+        ax.set_title('Antall ol jekka!',fontstyle='italic')
+        group_labels = ['{0}:00'.format(h),'{0}:05'.format(h),'{0}:10'.format(h),'{0}:15'.format(h),'{0}:20'.format(h),'{0}:25'.format(h),'{0}:30'.format(h),'{0}:35'.format(h),'{0}:40'.format(h),'{0}:45'.format(h),'{0}:50'.format(h),'{0}:55'.format(h)]
+        ax.set_xticklabels(group_labels)
+        #fig.autofmt_xdate() #used to autorotate labels
+        pylab.show()
 
 
 
 c = count()
 
 last = c.count('test_list','2010') 
-c.stats2(36,2,23,last)
-#c.stats('test_key','test_value',last)
+c.stats2(36,3,19,last)
 
-#c.create_hour('0')
+c.graph()
 
-#c.print_list('test_list')
-c.print_list('35-4-12-value')
-for i in range(1,12):
-    for j in range(1,7):
-        for k in range(1,52):
-            if c.print_list('{0}-{1}-{2}-value'.format(k,j,i)) > 0:
-                print('jippi')
 
 
 
