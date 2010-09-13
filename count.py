@@ -1,18 +1,21 @@
 #!/usr/bin/env python
+# coding=utf8
 
 from __future__ import division
-import time, shelve, math, create_UTC, pylab
+import time, shelve, math, create_UTC, pylab, matplotlib, optparse, sys
 utc = create_UTC.create_utc()
 
 class count:
 
     def open_file(self, file_in):
         self.file = shelve.open(file_in)
-        self.year = file_in
+        self.year = time.strftime('%Y')
 
-    def count(self, list,year):
+    def count(self, list,year_file,directory):
         #self.act_list = list
-        self.open_file(year)
+        print('{0}/{1}'.format(directory,year_file))
+        self.open_file('{0}/{1}'.format(directory,year_file))
+        #self.open_file(year_file)
         #self.act_file = shelve.open(file)
         if self.file.has_key(list):
             temp_list = self.file[list]
@@ -48,7 +51,7 @@ class count:
             self.act_file[value] = [1]
             self.act_file[key] = [time.mktime((tm.tm_year,tm.tm_mon,tm.tm_mday,t,m,0,tm.tm_wday,tm.tm_yday,1))]
 
-    def stats2(self,week,wday,hour,last_count):
+    def stats2(self,last_count):
         if self.file.has_key('week'):
             self.stats3(last_count)
             #print('if')
@@ -105,32 +108,63 @@ class count:
         for i in self.file[list]:
             return i
 
-    def graph(self):
-        fig = pylab.figure()
+    def graph(self,directory):
+        matplotlib.rc('axes',edgecolor='w')
+        #matplotlib.rc('text',edgecolor='w')
+        fig = pylab.figure(facecolor='grey')
         ax = fig.add_subplot(1,1,1)
+        #ax.patch.set_alpha(0.5)
+        
         w = time.strftime('%W')
         d = time.strftime('%w')
         d = self.week_day(d)
         h = time.strftime('%H')
         y = self.file['{0}-{1}-{2}-value'.format(w,d,h)]
         x = range(len(y))
-        ax.bar(x,y,width=0.1,facecolor='#777777',align='center')
-        ax.set_ylabel('Counts')
-        ax.set_title('Antall ol jekka!',fontstyle='italic')
-        group_labels = ['{0}:00'.format(h),'{0}:05'.format(h),'{0}:10'.format(h),'{0}:15'.format(h),'{0}:20'.format(h),'{0}:25'.format(h),'{0}:30'.format(h),'{0}:35'.format(h),'{0}:40'.format(h),'{0}:45'.format(h),'{0}:50'.format(h),'{0}:55'.format(h)]
-        ax.set_xticklabels(group_labels)
-        #fig.autofmt_xdate() #used to autorotate labels
-        pylab.show()
+
+
+        ax.bar(x,y,width=0.5,color='#74201B',align='center',linewidth=0.5,edgecolor='black')
+        ax.set_ylabel(u'Antall øl',color='w')
+        ax.set_title(u'Oversikt over antall øl jekka siste timen, fordelt på hvert femte minutt',fontstyle='italic',color='w')
+        ax.set_xticks(x)
+        x_labels = ['{0}:00'.format(h),'{0}:05'.format(h),'{0}:10'.format(h),'{0}:15'.format(h),'{0}:20'.format(h),'{0}:25'.format(h),'{0}:30'.format(h),'{0}:35'.format(h),'{0}:40'.format(h),'{0}:45'.format(h),'{0}:50'.format(h),'{0}:55'.format(h)]
+        ax.set_xticklabels(x_labels,color='w')
+        ax.set_yticks(y)
+        y_labels = self.mkylst(y)
+        print(y_labels)
+        #ax.set_yticklabels(y_labels,color='w')
+        fig.autofmt_xdate() #used to autorotate labels
+        #pylab.show()
+        pylab.savefig('{3}/images/{0}-{1}-{2}.png'.format(w,d,h,directory),transparent=True)
+
+
+    def mkylst(self,y):
+        m = max(y)
+        y2 = []
+        for i in range(m+2):
+            y2.append(str(i))
+        return y2
 
 
 
 c = count()
 
-last = c.count('test_list','2010') 
-c.stats2(36,3,19,last)
 
-c.graph()
+# User Interface
+def main():
+    p = optparse.OptionParser()
+    p.add_option('-d','--dir',action='store',help='Directory where statistic files will be created')
+    option, args = p.parse_args()
+
+    if len(sys.argv) == 1:
+        p.error('\nNo options passed. \n-h[--help] for usage')
+    else:
+        year = time.strftime('%Y')
+        last = c.count('{0}-count'.format(year),year,option.dir)
+        c.stats2(last)
+        c.graph(option.dir)
 
 
 
-
+if __name__ == "__main__":
+    main()
