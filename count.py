@@ -65,13 +65,15 @@ class count:
                 wday.append(i)
             hour = []
             for i in range(24):
-		if i < 10:
-			i = '0{0}'.format(i)
                 hour.append(i)
             for i in week:
                 for j in wday:
                     for k in hour:
-                        self.file['{0}-{1}-{2}'.format(i,j,k)] = utc.fmin(int(self.year),i,j,k)
+			if k < 10:
+				k2 = '0{0}'.format(k)
+			else:
+				k2 = k
+                        self.file['{0}-{1}-{2}'.format(i,j,k2)] = utc.fmin(int(self.year),i,j,k)
                         self.file['{0}-{1}-{2}-value'.format(i,j,k)] = [0,0,0,0,0,0,0,0,0,0,0,0]
             self.stats3(last_count)
 
