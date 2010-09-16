@@ -65,6 +65,8 @@ class count:
                 wday.append(i)
             hour = []
             for i in range(24):
+		if i < 10:
+			i = '0{0}'.format(i)
                 hour.append(i)
             for i in week:
                 for j in wday:
